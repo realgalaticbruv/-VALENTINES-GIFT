@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Valentine 💕</title>
+
+<style>
+/* ---------- PAGE ---------- */
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    font-family:Arial, sans-serif;
+    background:white;
+    overflow:hidden;
+}
+
+/* ---------- HEADER ---------- */
+h1{
+    font-size:clamp(26px,6vw,48px);
+    margin-bottom:30px;
+    font-weight:bold;
+
+    background:linear-gradient(45deg,#ff6b81,#ff9a9e,#ff4b6e);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+/* ---------- IMAGE ---------- */
+#bigImg{
+    width:min(70vw,380px);
+    border-radius:16px;
+    margin-bottom:35px;
+    transition:.25s;
+}
+
+/* ---------- BUTTON ROW ---------- */
+.buttons{
+    display:flex;
+    gap:28px;
+}
+
+/* ---------- BUTTONS ---------- */
+button{
+    padding:14px 34px;
+    font-size:18px;
+    border-radius:12px;
+    border:3px solid #222; /* medium border */
+    font-weight:bold;
+    cursor:pointer;
+    transition:.2s;
+}
+
+#yesBtn{
+    background:#ff6b81;
+    color:white;
+}
+
+#noBtn{
+    background:#f3f3f3;
+}
+
+/* ---------- CONFETTI ---------- */
+.confetti{
+    position:fixed;
+    width:8px;
+    height:8px;
+    top:50%;
+    left:50%;
+    border-radius:2px;
+    animation:burst .9s forwards;
+}
+
+@keyframes burst{
+    to{
+        transform:translate(var(--x),var(--y));
+        opacity:0;
+    }
+}
+
+/* ---------- HEART RAIN ---------- */
+.heart{
+    position:fixed;
+    top:-10vh;
+    font-size:22px;
+    animation:fall 5s linear forwards;
+}
+
+@keyframes fall{
+    to{
+        transform:translateY(110vh);
+        opacity:0;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<h1 id="titleTxt">Will You Be My Valentine? 💕</h1>
+
+<img id="bigImg" src="1.jpg">
+
+<div class="buttons">
+    <button id="yesBtn">Yes 💖</button>
+    <button id="noBtn">No 🥀</button>
+</div>
+
+<script>
+/* ---------- IMAGES (1→6 only) ---------- */
+const images=["1.jpg","2.jpg","3.jpg","4.jpg","5.jpg","6.jpg"];
+
+let currentImg=0;
+let noCount=0;
+let yesScale=1;
+
+const bigImg=document.getElementById("bigImg");
+const yesBtn=document.getElementById("yesBtn");
+const noBtn=document.getElementById("noBtn");
+const titleTxt=document.getElementById("titleTxt");
+
+
+/* next image but stop at 6 */
+function nextImage(){
+    if(currentImg < images.length-1){
+        currentImg++;
+        bigImg.src=images[currentImg];
+    }
+}
+
+
+/* SAFE teleport anywhere on screen */
+function moveNo(){
+
+    noBtn.style.position="fixed";
+
+    const btnW=noBtn.offsetWidth;
+    const btnH=noBtn.offsetHeight;
+    const pad=12;
+
+    const maxX=window.innerWidth-btnW-pad;
+    const maxY=window.innerHeight-btnH-pad;
+
+    const x=Math.random()*maxX;
+    const y=Math.random()*maxY;
+
+    noBtn.style.left=x+"px";
+    noBtn.style.top=y+"px";
+}
+
+
+/* grow YES only (max 10) */
+function growYes(){
+    if(noCount<10){
+        yesScale+=0.12;
+        yesBtn.style.transform=`scale(${yesScale})`;
+    }
+}
+
+
+/* NO button action (hover + tap) */
+function noAction(e){
+    if(e) e.preventDefault();
+
+    moveNo();
+    nextImage();
+    growYes();
+    noCount++;
+}
+
+noBtn.addEventListener("mouseover",noAction);
+noBtn.addEventListener("click",noAction);
+
+
+/* confetti burst */
+function confetti(){
+    for(let i=0;i<40;i++){
+        const c=document.createElement("div");
+        c.className="confetti";
+
+        const a=Math.random()*6.28;
+        const d=120+Math.random()*150;
+
+        c.style.setProperty("--x",Math.cos(a)*d+"px");
+        c.style.setProperty("--y",Math.sin(a)*d+"px");
+        c.style.background=`hsl(${Math.random()*360},80%,60%)`;
+
+        document.body.appendChild(c);
+        setTimeout(()=>c.remove(),900);
+    }
+}
+
+
+/* hearts rain */
+function hearts(){
+    setInterval(()=>{
+        const h=document.createElement("div");
+        h.className="heart";
+        h.innerHTML="💗";
+        h.style.left=Math.random()*100+"vw";
+        document.body.appendChild(h);
+        setTimeout(()=>h.remove(),5000);
+    },600);
+}
+
+
+/* YES click */
+yesBtn.addEventListener("click",()=>{
+    bigImg.src="7.jpg";
+    titleTxt.innerText="It’s a date 💕";
+
+    yesBtn.style.display="none";
+    noBtn.style.display="none";
+
+    confetti();
+    hearts();
+});
+</script>
+
+</body>
+</html>
